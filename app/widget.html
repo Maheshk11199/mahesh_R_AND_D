@@ -1,12 +1,449 @@
+ 
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-  </head>
-  <body>
-    <h2>This is a sample Widget built using Zoho Extension toolkit.</h2>
-    <h1>Testing</h1>
-    <h1>yt</h1>
-    <h1></h1>
-  </body>
+<head>
+    <base href="https://demos.telerik.com/kendo-ui/treelist/editing-incell">
+    <style>html { font-size: 14px; font-family: Arial, Helvetica, sans-serif; }</style>
+    <title></title>
+    <link href="https://kendo.cdn.telerik.com/themes/6.7.0/default/default-main.css" rel="stylesheet" />
+    <script src="https://kendo.cdn.telerik.com/2023.2.829/js/jquery.min.js"></script>
+    
+    
+    <script src="https://kendo.cdn.telerik.com/2023.2.829/js/kendo.all.min.js"></script>
+
+     <script  src="https://js.zohostatic.com/creator/widgets/version/1.0/widgetsdk-min.js"></script>
+    
+    
+
+</head>
+<body>
+    <div id="example">
+    <div id="treelist"></div>
+    <button id="btn">Refresh</button>
+    <script>
+    
+
+
+ZOHO.CREATOR.init()
+        .then(function(data) {
+            var ArrayList=[];
+
+            var config = { 
+
+   
+reportName : "DPR_R_D_Report", 
+criteria :"(ID != 0)",
+page : 1,
+pageSize : 200
+            }
+            var countconfig = {
+                       appName : "egmore-pmis",
+                     reportName : "DPR_R_D_Report"
+                  } 
+ 
+                  ZOHO.CREATOR.API.getRecordCount(countconfig).then(function (cresponse){
+ 	console.log(cresponse.result.records_count);
+                 
+
+     ZOHO.CREATOR.API.getAllRecords(config).then(function(response){
+	var recordArr = response.data;
+    console.log(response);
+    for(var index in recordArr){
+    
+        ArrayList.push({
+          
+          CREATOR_id:recordArr[index].ID,
+          title:recordArr[index].TASK,
+          parentId:recordArr[index].parent_ID,
+          id:recordArr[index].current_id,
+ 
+        });
+        //console.log(response.result.records_count);
+        if(ArrayList.length==cresponse.result.records_count)
+        {
+           // console.log(response.data.length +" "+ArrayList.length)
+            myFunction(ArrayList);
+            console.log(ArrayList);
+            
+           
+        }
+		
+  
+	}	
+})  
+});
+});
+        
+
+  
+function myFunction(array) {
+    var mtdata= array;
+
+
+    var mycolumns=null;
+
+    mycolumns=[
+     
+   
+     { field: "title", title: "Task" , width: 200,headerAttributes: {style: "text-align: center;vertical-align: middle;"}, menu: false, expanded: { from: "Expanded" }},
+   //   { field: "start", title: "Actual Start Date", format: "{0:M/d/yyyy}", editable: true, width: 130 },
+   //  { field: "end", title: "Actual End Date", format: "{0:M/d/yyyy}", editable: true, width: 130 },
+    
+     { field: "parentId", title: "Parent ID" , width: 100,headerAttributes: {style: "text-align: center;vertical-align: middle;", expanded: { from: "Expanded" }}, menu: false},
+     { field: "id", title: "CUrrent_ID" , width: 100,headerAttributes: {style: "text-align: center;vertical-align: middle;"}, menu: false},
+     { field: "CREATOR_id", title: "Creator ID"  ,width: 100,expanded: true ,headerAttributes: {style: "text-align: center;vertical-align: middle;"}},
+     //{ field: "Extension", title: "Ext", format: "{0:#}" },
+     { command: [{name: "createchild", text: "Add child"},"destroy" ], width: 240 },
+    //  { command: [
+    //     {
+    //       name: "Add Record",
+    //       text: "Add Record",
+    //       className : 'but',
+    //       click: function(buttondata) {
+    //         console.log(buttondata);
+            
+    //         var tr = $(buttondata.target).closest("tr"); 
+
+    //         var entrydata = this.dataItem(tr);
+            
+    //         functionenterdpr(entrydata);
+           
+    //       }
+    //     }
+    //   ] , title: "Enter DPR ",width: 100,headerAttributes: {style: "text-align: center;vertical-align: middle;"}},
+     //{fields: "Expand",title:"dfg", expanded: { from: "Expanded", type: "boolean", defaultValue: true }},
+]
+                            
+console.log(mycolumns);
+
+            //kendoConsole.log("TreeList save");
+        
+
+                
+                    // var crudServiceBaseUrl = "https://demos.telerik.com/kendo-ui/service";
+
+                    // var dataSource = new kendo.data.TreeListDataSource({
+                    //         transport: {
+                    //             read: {
+                    //                 url: crudServiceBaseUrl + "/EmployeeDirectory/All",
+                    //                 dataType: "jsonp"
+                    //             },
+                    //             update: {
+                    //                 url: crudServiceBaseUrl + "/EmployeeDirectory/Update",
+                    //                 dataType: "jsonp"
+                    //             },
+                    //             destroy: {
+                    //                 url: crudServiceBaseUrl + "/EmployeeDirectory/Destroy",
+                    //                 dataType: "jsonp"
+                    //             },
+                    //             create: {
+                    //                 url: crudServiceBaseUrl + "/EmployeeDirectory/Create",
+                    //                 dataType: "jsonp"
+                    //             },
+                    //             parameterMap: function(options, operation) {
+                    //                 if (operation !== "read" && options.models) {
+                    //                     return {models: kendo.stringify(options.models)};
+                    //                 }
+                    //             }
+                    //         },
+                    //         batch: true,
+                    //         schema: {
+                    //             model: {
+                    //                 id: "EmployeeId",
+                    //                 parentId: "ReportsTo",
+                    //                 fields: {
+                    //                     EmployeeId: { type: "number", editable: false, nullable: false },
+                    //                     ReportsTo: { nullable: true, type: "number" },
+                    //                     FirstName: { validation: { required: true } },
+                    //                     HireDate: { type: "date" },
+                    //                     Phone: { type: "string" },
+                    //                     HireDate: { type: "date" },
+                    //                     BirthDate: { type: "date" },
+                    //                     Extension: { type: "number", validation: { min: 0} },
+                    //                     Position: { type: "string" }
+                    //                 },
+                    //                 expanded: true
+                    //             }
+                    //         }
+                    //     });
+ $("#treelist").kendoTreeList({
+  dataSource: mtdata,
+                    
+            
+           
+                       // toolbar: [ "create", "save", "cancel" ],
+                        toolbar: [ "create"],
+                        editable: "incell",
+                        height: 540,
+                        columns:mycolumns
+                      });
+                    }
+                       // save: onSave,
+                        //dataBound: function (e) {
+
+                            // var treelist = $("#treelist").data("kendoTreeList");
+    //treelist.dataSource.at(0).name="Marta Stewart";
+    //treelist.refresh();
+                            //var grid = this;
+//By field 
+//grid.thead.find("[data-index=1]>.k-header-column-menu").remove();      
+                 
+
+      
+
+
+
+      // grid.tbody.find('>tr').each(function(s){
+       
+      //     var dataItem = grid.dataItem(this);
+        
+      //      grid.expand(jQuery(this));
+         
+      //               })           //console.log("imasavebutton");
+      //                       var items = e.sender.items();
+      //                      // console.log(items);
+
+      //                       for (var i = 0; i < items.length; i++) {
+      //                           var dataItem = e.sender.dataItem(items[i]);
+      //                          // console.log(dataItem);
+      //                           var row = $(items[i]);
+      //                           if (dataItem.isNew()) {
+
+      //                               console.log(dataItem);
+      //                               row.find("[data-command='createchild']").hide();
+
+
+
+
+
+
+
+
+
+
+
+                                    //console.log(ad);
+//         var insertTask = ad.task; 
+// ///tryin g t insert the new creaatted task  in to t wcretor'
+ //var random_current_ID = Math.floor(Math.random() * 900) + 100;
+ //var insertprent =dataItem.parentId;
+
+// formData = {
+//            "data" : {
+         
+//             "TASK": "New Task",
+//             "parent_ID": insertprent,
+//             "current_id": random_current_ID           
+//         }}
+// var insertconfig = { 
+//     appName : "egmore-pmis",
+//     formName : "DPR_R_D", 
+//     data : formData 
+// } 
+
+
+
+    // ZOHO.CREATOR.API.addRecord(insertconfig).then(function(response){ 
+    //     if(response.code == 3000){
+    //     console.log(response.data.ID+"Record added successfully");
+    //     }
+    // });
+
+    // location.reload();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            //     }
+                            //     else {
+                            //         row.find("[data-command='createchild']").show();
+                            //         console.log("secfirstif");
+                            //     }
+                            // }
+
+                           // location.reload();                      
+      //}, 
+//       saveChanges: function(e) {
+
+//         console.log("sdfsd");
+//         location.reload();
+               
+// var treelist = $("#treelist").data("kendoTreeList");
+//    // treelist.dataSource.at(0).name="Marta Stewart";
+//     treelist.refresh();
+//         console.log("oooo");
+//     //  if (!confirm("Are you sure you want to save all changes?")) {
+//      //   e.preventDefault();
+//    //   }
+//     },
+    // pageable: {
+    //         pageSize: 2,
+    //         refresh: true
+    // },
+//       change: function(e){
+
+
+// console.log('iam chane');
+
+
+//       },
+//                         save: function(q) {
+
+
+// console.log("it was na save");
+// console.log(q.model.CREATOR_id);
+// refresh: true
+
+
+                           
+   
+
+// //     var taskname=  q.values.title;
+// //     var updateid=  q.model.CREATOR_id;
+   
+// //       console.log(q);
+// //     formData = {
+// //            "data" : {
+         
+// //             "TASK": taskname
+            
+// //         }}
+
+// //         var updateconfig = { 
+// //        appName : "egmore-pmis",
+// //        reportName : "DPR_R_D_Report", 
+// //        id : updateid,
+        
+// //        data : formData 
+       
+// // } 
+
+// // ZOHO.CREATOR.API.updateRecord(updateconfig).then(function(response){
+// // 	if(response.code == 3000){
+// // 		console.log("Record updated successfully");
+// // 	} 
+// // });
+//         // This function will be called when an item is about to be saved
+
+//         // Access the edited item's data
+//         // var editedItem = ed.model;
+
+//         // // Perform actions on the edited item before saving
+//         // console.log("Item about to be saved:", editedItem);
+
+//         // If needed, you can prevent the save operation by calling e.preventDefault()
+//         // e.preventDefault();
+//     },
+                         
+                        //  [
+                        //     { field: "FirstName", expandable: true, title: "First Name", width: 250 },
+                        //     { field: "LastName", title: "Last Name" },
+                        //     { field: "Position" },
+                        //     { field: "Phone", title: "Phone" },
+                        //     { field: "Extension", title: "Ext", format: "{0:#}" },
+                        //     { command: [{name: "createchild", text: "Add child"},"destroy" ], width: 240 }
+                        // ]
+                   
+
+
+
+                    //inline edit fuctions
+//                     function onSave(arg) {
+//          console.log(arg);
+//          var taskname=  arg.values.title;
+//      var updateid=  arg.model.CREATOR_id;
+      
+//     formData = {
+//            "data" : {
+         
+//             "TASK": taskname
+            
+//         }}
+
+//          var updateconfig = { 
+//        appName : "egmore-pmis",
+//        reportName : "DPR_R_D_Report", 
+//        id : updateid,
+        
+//        data : formData 
+       
+// } 
+
+// ZOHO.CREATOR.API.updateRecord(updateconfig).then(function(response){
+// 	if(response.code == 3000){
+// 		console.log("Record updated successfully");
+// 	} 
+// });
+//         }
+//       function functionenterdpr(entrydata)
+//       {
+
+
+
+// console.log(entrydata.parentId);
+
+
+// var random_current_ID = Math.floor(Math.random() * 900) + 100;
+//  var insertprent =entrydata.parentId;
+
+// formData = {
+//            "data" : {
+         
+//             "TASK": "New Task",
+//             "parent_ID": insertprent,
+//             "current_id": random_current_ID           
+//         }}
+// var insertconfig = { 
+//     appName : "egmore-pmis",
+//     formName : "DPR_R_D", 
+//     data : formData 
+// } 
+
+
+
+//     ZOHO.CREATOR.API.addRecord(insertconfig).then(function(response){ 
+//         if(response.code == 3000){
+//         console.log(response.data.ID+"Record added successfully");
+//         }
+//     });
+
+//     location.reload();
+
+
+
+//       }
+                     
+              
+
+    </script>
+</div>
+
+
+
+</body>
 </html>
